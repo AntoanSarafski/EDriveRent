@@ -165,7 +165,22 @@ namespace EDriveRent.Core
 
         public string UsersReport()
         {
-            throw new NotImplementedException();
+            StringBuilder sb = new();
+
+            sb.AppendLine("*** E-Drive-Rent ***");
+
+            var orderedUsers = users.GetAll()
+                .OrderByDescending(x => x.Rating)
+                .ThenBy(x => x.LastName)
+                .ThenBy(x => x.FirstName)
+                .ToList();
+
+            foreach (var user in orderedUsers)
+            {
+                sb.AppendLine(user.ToString());
+            }
+
+            return sb.ToString().TrimEnd();
         }
     }
 }
