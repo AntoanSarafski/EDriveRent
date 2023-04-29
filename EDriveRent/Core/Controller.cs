@@ -72,8 +72,36 @@ namespace EDriveRent.Core
 
         public string AllowRoute(string startPoint, string endPoint, double length)
         {
-            throw new NotImplementedException();
+            if ((routes.GetAll().FirstOrDefault(s => s.StartPoint == startPoint) != null) &&
+                 (routes.GetAll().FirstOrDefault(e => e.EndPoint == endPoint) != null) &&
+                  (routes.GetAll().FirstOrDefault(l => l.Length == length) != null))
+            {
+                return string.Format(OutputMessages.RouteExisting, startPoint, endPoint, length);
+            }
+            if ((routes.GetAll().FirstOrDefault(s => s.StartPoint == startPoint) != null) &&
+                 (routes.GetAll().FirstOrDefault(e => e.EndPoint == endPoint) != null) &&
+                  (routes.GetAll().FirstOrDefault(l => l.Length < length) != null))
+            {
+                return string.Format(OutputMessages.RouteIsTooLong, startPoint, endPoint);
+            }
+
+            if ((routes.GetAll().FirstOrDefault(s => s.StartPoint == startPoint) != null) &&
+                 (routes.GetAll().FirstOrDefault(e => e.EndPoint == endPoint) != null) &&
+                  (routes.GetAll().FirstOrDefault(l => l.Length > length) != null))
+            {
+                IRoute routeToLock = routes.GetAll()
+                    .FirstOrDefault(s => s.StartPoint == startPoint && s.EndPoint == endPoint && s.Length > length && s.IsLocked == false);
+
+                routeToLock.LockRoute();
+            }
+
+            IRoute route = new Route(startPoint, endPoint, length, routes.GetAll().Count + 1);
+            routes.AddModel(route);
+
+
+            return string.Format(OutputMessages.NewRouteAdded, startPoint, endPoint, length);
         }
+
 
         public string MakeTrip(string drivingLicenseNumber, string licensePlateNumber, string routeId, bool isAccidentHappened)
         {
