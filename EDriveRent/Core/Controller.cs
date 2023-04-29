@@ -42,6 +42,34 @@ namespace EDriveRent.Core
         }
 
 
+        public string UploadVehicle(string vehicleType, string brand, string model, string licensePlateNumber)
+        {
+            if (vehicleType != "PassengerCar" && vehicleType != "CargoVan")
+            {
+                return string.Format(OutputMessages.VehicleTypeNotAccessible, vehicleType);
+            }
+            if (vehicles.FindById(licensePlateNumber) != null)
+            {
+                return string.Format(OutputMessages.LicensePlateExists, licensePlateNumber);
+            }
+
+            IVehicle vehicle;
+
+            if (vehicleType == "PassengerCar")
+            {
+                vehicle = new PassengerCar(brand, model, licensePlateNumber);
+            }
+            else
+            {
+                vehicle = new CargoVan(brand, model, licensePlateNumber);
+            }
+
+            vehicles.AddModel(vehicle);
+
+            return string.Format(OutputMessages.VehicleAddedSuccessfully, brand, model, licensePlateNumber);
+        }
+
+
         public string AllowRoute(string startPoint, string endPoint, double length)
         {
             throw new NotImplementedException();
@@ -58,11 +86,7 @@ namespace EDriveRent.Core
             throw new NotImplementedException();
         }
 
-        public string UploadVehicle(string vehicleType, string brand, string model, string licensePlateNumber)
-        {
-            throw new NotImplementedException();
-        }
-
+        
         public string UsersReport()
         {
             throw new NotImplementedException();
