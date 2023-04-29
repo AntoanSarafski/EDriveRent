@@ -142,10 +142,27 @@ namespace EDriveRent.Core
 
         public string RepairVehicles(int count)
         {
-            throw new NotImplementedException();
+            var damagedVehicles = vehicles.GetAll()
+                .Where(x => x.IsDamaged == true)
+                .OrderBy(x => x.Brand)
+                .ThenBy(x => x.Model)
+                .Take(count)
+                .ToList();
+
+
+            foreach (var vehicle in damagedVehicles)
+            {
+
+                vehicle.ChangeStatus();
+                vehicle.Recharge();
+
+            }
+
+            return string.Format(OutputMessages.RepairedVehicles, damagedVehicles.Count);
         }
 
-        
+
+
         public string UsersReport()
         {
             throw new NotImplementedException();
