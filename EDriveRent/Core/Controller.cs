@@ -105,8 +105,39 @@ namespace EDriveRent.Core
 
         public string MakeTrip(string drivingLicenseNumber, string licensePlateNumber, string routeId, bool isAccidentHappened)
         {
-            throw new NotImplementedException();
+            IUser user = users.FindById(drivingLicenseNumber);
+            IVehicle vehicle = vehicles.FindById(licensePlateNumber);
+            IRoute route = routes.FindById(routeId);
+
+            if (user.IsBlocked == true)
+            {
+                return string.Format(OutputMessages.UserBlocked, drivingLicenseNumber);
+            }
+            if (vehicle.IsDamaged == true)
+            {
+                return string.Format(OutputMessages.VehicleDamaged, licensePlateNumber);
+            }
+            if (route.IsLocked == true)
+            {
+                return string.Format(OutputMessages.RouteLocked, routeId);
+            }
+
+            vehicle.Drive(route.Length);
+
+            if (isAccidentHappened == true)
+            {
+                vehicle.ChangeStatus();
+                user.DecreaseRating();
+            }
+            else
+            {
+                user.IncreaseRating();
+            }
+
+            return vehicle.ToString();
         }
+
+
 
 
         public string RepairVehicles(int count)
